@@ -1,10 +1,13 @@
 Rails LTS 3.0
 =============
 
-Rails LTS 3.0 is a maintained release of Rails 3.0.20 that includes additional security fixes. See [https://railslts.com/](https://railslts.com) for more information.
+Rails LTS 3.0 is a maintained release of Rails 3.0 that includes additional security fixes.
+See [https://railslts.com/](https://railslts.com) for more information.
 
-This is the public repository for the "Community Edition". It receives security patches with a 10 day delay.
-
+**Please note that support for Rails 3.0 is scheduled to end on January 1st, 2016.**
+After that date we will no longer be able to provide security patches for Rails 3.0.
+If you require patches after that date, please either upgrade to Rails LTS 3.2 (a version we support)
+or make a special arrangement with us.
 
 
 Pull Requests
