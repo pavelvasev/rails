@@ -117,7 +117,8 @@ namespace :railslts do
   task :update_license do
     require 'date'
     last_change = Date.parse(`git log -1 --format=%cd`)
-    SUB_PROJECT_PATHS.each do |project|
+    ALL_PROJECT_PATHS.each do |project|
+      next if project == 'railslts-version' # has no LICENSE file
       license_path = "#{project}/LICENSE"
       puts "Updating license #{license_path}..."
       File.exists?(license_path) or fail.call("Could not find license: #{license_path}")
