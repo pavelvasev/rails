@@ -10,6 +10,8 @@ Gem::Specification.new do |s|
   s.email = 'david@loudthinking.com'
   s.homepage = 'http://www.rubyonrails.org'
 
+  s.files = [ "README.md", "LICENSE" ]
+
   s.add_dependency 'activesupport',    "= #{RailsLts::VERSION::STRING}"
   s.add_dependency 'activerecord',     "= #{RailsLts::VERSION::STRING}"
   s.add_dependency 'actionpack',       "= #{RailsLts::VERSION::STRING}"
