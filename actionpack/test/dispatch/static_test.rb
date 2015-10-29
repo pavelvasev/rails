@@ -50,6 +50,7 @@ class StaticTest < ActiveSupport::TestCase
   end
 
   test "does not betray the existance of files outside root when using alternate path separators" do
+    skip "Can't test file permissions on a vagrant share" if Dir.pwd.starts_with?('/vagrant')
     filename = 'non_public_file.html'
     assert File.exist?(File.join(FIXTURE_LOAD_PATH, filename))
     path = "/%5C..%2F#{filename}"

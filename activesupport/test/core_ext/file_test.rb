@@ -24,6 +24,7 @@ class AtomicWriteTest < Test::Unit::TestCase
   end
 
   def test_atomic_write_preserves_file_permissions
+    skip "Can't test file permissions on a vagrant share" if Dir.pwd.starts_with?('/vagrant')
     contents = "Atomic Text"
     File.open(file_name, "w", 0755) do |file|
       file.write(contents)
@@ -45,6 +46,7 @@ class AtomicWriteTest < Test::Unit::TestCase
   end
 
   def test_atomic_write_preserves_default_file_permissions
+    skip "Can't test file permissions on a vagrant share" if Dir.pwd.starts_with?('/vagrant')
     contents = "Atomic Text"
     File.atomic_write(file_name, Dir.pwd) do |file|
       file.write(contents)
