@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.homepage          = 'http://www.rubyonrails.org'
   s.rubyforge_project = 'activemodel'
 
-  s.files        = Dir['CHANGELOG', 'MIT-LICENSE', 'README.rdoc', 'lib/**/*']
+  s.files        = Dir['CHANGELOG', 'LICENSE', 'README.rdoc', 'lib/**/*']
   s.require_path = 'lib'
 
   s.add_dependency('activesupport', "= #{RailsLts::VERSION::STRING}")

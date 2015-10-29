@@ -14,6 +14,6 @@ Gem::Specification.new do |s|
   s.homepage          = 'http://www.rubyonrails.org'
   s.rubyforge_project = 'activesupport'
 
-  s.files        = Dir['CHANGELOG', 'README.rdoc', 'lib/**/*']
+  s.files        = Dir['CHANGELOG', 'LICENSE', 'README.rdoc', 'lib/**/*']
   s.require_path = 'lib'
 end

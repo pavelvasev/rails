@@ -15,8 +15,9 @@ Gem::Specification.new do |s|
   s.homepage          = 'http://www.rubyonrails.org'
   s.rubyforge_project = 'rails'
 
-  s.bindir             = 'bin'
-  s.executables        = ['rails']
+  s.bindir            = 'bin'
+  s.executables       = ['rails']
+  s.files             = ['LICENSE', 'README.md']
 
   s.add_dependency('activesupport',    "= #{RailsLts::VERSION::STRING}")
   s.add_dependency('actionpack',       "= #{RailsLts::VERSION::STRING}")
