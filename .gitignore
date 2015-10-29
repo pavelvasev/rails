@@ -1,7 +1,5 @@
 .bundle
-dist/*.gem
-dist/railslts/pkg
-Gemfile.lock
+pkg/*.gem
 debug.log
 doc/rdoc
 activemodel/doc
