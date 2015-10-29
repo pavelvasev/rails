@@ -1,9 +1,9 @@
-version = File.read(File.expand_path("../../RAILS_VERSION", __FILE__)).strip
+require File.expand_path('../../railslts-version/lib/railslts-version', __FILE__)
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'activerecord'
-  s.version     = version
+  s.version     = RailsLts::VERSION::STRING
   s.summary     = 'Object-relational mapper framework (part of Rails).'
   s.description = 'Databases on Rails. Build a persistent domain model by mapping database tables to Ruby classes. Strong conventions for associations, validations, aggregations, migrations, and testing come baked-in.'
 
@@ -20,8 +20,8 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = %w( README.rdoc )
   s.rdoc_options.concat ['--main',  'README.rdoc']
 
-  s.add_dependency('activesupport', version)
-  s.add_dependency('activemodel',   version)
+  s.add_dependency('activesupport', "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('activemodel',   "= #{RailsLts::VERSION::STRING}")
   s.add_dependency('arel',          '~> 2.0.10')
   s.add_dependency('tzinfo',        '~> 0.3.23')
 end

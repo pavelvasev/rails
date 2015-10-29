@@ -45,10 +45,6 @@ task :generate_guides do
   ruby "guides/rails_guides.rb"
 end
 
-task :update_prototype_ujs do
-  system "curl http://github.com/rails/prototype-ujs/raw/master/src/rails.js > lib/rails/generators/rails/app/templates/public/javascripts/rails.js"
-end
-
 # Validate guides -------------------------------------------------------------------------
 desc 'Validate guides, use ONLY=foo to process just "foo.html"'
 task :validate_guides do
@@ -61,22 +57,4 @@ spec = eval(File.read('railties.gemspec'))
 
 Gem::PackageTask.new(spec) do |pkg|
   pkg.gem_spec = spec
-end
-
-# Publishing -------------------------------------------------------
-
-desc "Release to gemcutter"
-task :release => :package do
-  require 'rake/gemcutter'
-  Rake::Gemcutter::Tasks.new(spec).define
-  Rake::Task['gem:push'].invoke
-end
-
-desc "Publish the guides"
-task :pguides => :generate_guides do
-  require 'rake/contrib/sshpublisher'
-  mkdir_p 'pkg'
-  `tar -czf pkg/guides.gz guides/output`
-  Rake::SshFilePublisher.new("web.rubyonrails.org", "/u/sites/guides.rubyonrails.org/public", "pkg", "guides.gz").upload
-  `ssh web.rubyonrails.org 'cd /u/sites/guides.rubyonrails.org/public/ && tar -xvzf guides.gz && mv guides/output/* . && rm -rf guides*'`
 end

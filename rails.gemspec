@@ -1,9 +1,9 @@
-version = File.read(File.expand_path("../RAILS_VERSION",__FILE__)).strip
+require File.expand_path('../railslts-version/lib/railslts-version', __FILE__)
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'rails'
-  s.version     = version
+  s.version     = RailsLts::VERSION::STRING
   s.summary     = 'Full-stack web application framework.'
   s.description = 'Ruby on Rails is a full-stack web framework optimized for programmer happiness and sustainable productivity. It encourages beautiful code by favoring convention over configuration.'
 
@@ -18,11 +18,12 @@ Gem::Specification.new do |s|
   s.bindir             = 'bin'
   s.executables        = ['rails']
 
-  s.add_dependency('activesupport',  version)
-  s.add_dependency('actionpack',     version)
-  s.add_dependency('activerecord',   version)
-  s.add_dependency('activeresource', version)
-  s.add_dependency('actionmailer',   version)
-  s.add_dependency('railties',       version)
+  s.add_dependency('activesupport',    "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('actionpack',       "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('activerecord',     "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('activeresource',   "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('actionmailer',     "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('railties',         "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('railslts-version', "= #{RailsLts::VERSION::STRING}")
   s.add_dependency('bundler',        '~> 1.0')
 end

@@ -198,13 +198,3 @@ task :lines do
 
   puts "Total: Lines #{total_lines}, LOC #{total_codelines}"
 end
-
-
-# Publishing ------------------------------------------------------
-
-desc "Release to gemcutter"
-task :release => :package do
-  require 'rake/gemcutter'
-  Rake::Gemcutter::Tasks.new(spec).define
-  Rake::Task['gem:push'].invoke
-end

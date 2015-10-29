@@ -1,9 +1,9 @@
-version = File.read(File.expand_path("../../RAILS_VERSION", __FILE__)).strip
+require File.expand_path('../../railslts-version/lib/railslts-version', __FILE__)
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'actionmailer'
-  s.version     = version
+  s.version     = RailsLts::VERSION::STRING
   s.summary     = 'Email composition, delivery, and receiving framework (part of Rails).'
   s.description = 'Email on Rails. Compose, deliver, receive, and test emails using the familiar controller/view pattern. First-class support for multipart email and attachments.'
   s.required_ruby_version = '>= 1.8.7'
@@ -17,6 +17,6 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency('actionpack',  version)
+  s.add_dependency('actionpack',  "= #{RailsLts::VERSION::STRING}")
   s.add_dependency('mail',        '~> 2.2.19')
 end

@@ -1,9 +1,9 @@
-version = File.read(File.expand_path("../../RAILS_VERSION", __FILE__)).strip
+require File.expand_path('../../railslts-version/lib/railslts-version', __FILE__)
 
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'railties'
-  s.version     = version
+  s.version     = RailsLts::VERSION::STRING
   s.summary     = 'Tools for creating, working with, and running Rails applications.'
   s.description = 'Rails internals: application bootup, plugins, generators, and rake tasks.'
   s.required_ruby_version = '>= 1.8.7'
@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency('rake',          '>= 0.8.7')
   s.add_dependency('thor',          '~> 0.14.4')
   s.add_dependency('rdoc',          '~> 3.4')
-  s.add_dependency('activesupport', version)
-  s.add_dependency('actionpack',    version)
-  s.add_dependency('railslts-version', '= 3.0.20.7')
+  s.add_dependency('activesupport', "= #{RailsLts::VERSION::STRING}")
+  s.add_dependency('actionpack',    "= #{RailsLts::VERSION::STRING}")
 end
