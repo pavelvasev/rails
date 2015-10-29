@@ -12,9 +12,10 @@ fail = lambda { |message|
 }
 
 run = lambda { |command|
-  puts "\e[35m#{command}\e[0m" # pink
-  result = ENV['DRY_RUN'] || system(command)
-  result or fail.call("Failed to execute `#{command}`")
+  info = command.sub(/:\/\/\w+\:[^@]+@/, '://...@')
+  puts "\e[35m#{info}\e[0m" # pink
+  result = system(command)
+  result or fail.call("Failed to execute `#{info}`")
   true
 }
 
@@ -163,13 +164,20 @@ namespace :railslts do
     end
 
     task :push_to_gem_server do
-      password = `read -s -p "Enter password for railslts-gems-admin.makandra.de: " password; echo $password`.chomp
+      print 'Enter password for railslts-gems-admin.makandra.de: '
+      begin
+        system('stty -echo')
+        password = $stdin.gets.chomp
+      ensure
+        system('stty echo')
+      end
       server_url = "https://admin:#{password}@railslts-gems-admin.makandra.de"
-      gem_paths = Dir.glob['pkg/*.gem']
+      gem_paths = Dir.glob('pkg/*.gem')
       gem_paths.size == ALL_PROJECT_PATHS.size or fail.call("Expected #{ALL_PROJECT_PATHS.size} .gem files, but only got #{gem_paths.inspect}")
       gem_paths.each do |gem_path|
         puts "Publishing #{gem_path}"
-        run.call("gem push #{gem_path} --host #{server_url}")
+        # Hide STDOUT since that will print the server URL including the password
+        run.call("gem push #{gem_path} --host #{server_url} > /dev/null")
       end
     end
 
