@@ -315,6 +315,17 @@ class SanitizerTest < ActionController::TestCase
     assert_equal %(<a data-foo="foo">foo</a>), white_list_sanitize(text, :attributes => ['data-foo'])
   end
 
+  # Test for CVE-2015-7579
+  # The sanitizer of this version of Rails LTS is not affected. We add some tests to confirm this.
+  def test_full_sanitize_respect_html_escaping_of_the_given_string
+    sanitizer = HTML::FullSanitizer.new
+    assert_equal 'test\r\nstring', sanitizer.sanitize('test\r\nstring')
+    assert_equal '&', sanitizer.sanitize('&', :encode_special_chars => false)
+    assert_equal '&amp;', sanitizer.sanitize('&amp;')
+    assert_equal '&amp;amp;', sanitizer.sanitize('&amp;amp;')
+    assert_equal 'omg &lt;script&gt;BOM&lt;/script&gt;', sanitizer.sanitize('omg &lt;script&gt;BOM&lt;/script&gt;')
+  end
+
 protected
 
   def white_list_sanitize(input, options = {})
