@@ -82,6 +82,27 @@ class SanitizerTest < ActionController::TestCase
     assert_sanitized %(<a href="foo" onclick="bar"><script>baz</script></a>), %(<a href="foo"></a>)
   end
 
+  # Test for CVE-2015-7578
+  # The sanitizer of this version of Rails LTS is not affected. We add some tests to confirm this.
+  # While the video tag is not officially supported by the sanitizer of this version of Rails LTS,
+  # applications might have been configured to allow videos tags containing poster URIs as below.
+  def test_video_poster_sanitization
+    old_allowed_tags = HTML::WhiteListSanitizer.allowed_tags
+    old_allowed_attributes = HTML::WhiteListSanitizer.allowed_attributes
+    old_uri_attributes = HTML::WhiteListSanitizer.uri_attributes
+
+    HTML::WhiteListSanitizer.allowed_tags = ['video']
+    HTML::WhiteListSanitizer.allowed_attributes = ['poster', 'src']
+    HTML::WhiteListSanitizer.uri_attributes << 'poster'
+
+    assert_sanitized %(<video src="videofile.ogg" autoplay  poster="posterimage.jpg"></video>), %(<video src="videofile.ogg" poster="posterimage.jpg"></video>)
+    assert_sanitized %(<video src="videofile.ogg" poster=javascript:alert(1)></video>), %(<video src="videofile.ogg"></video>)
+  ensure
+    HTML::WhiteListSanitizer.allowed_tags = old_allowed_tags
+    HTML::WhiteListSanitizer.allowed_attributes = old_allowed_attributes
+    HTML::WhiteListSanitizer.uri_attributes = old_uri_attributes
+  end
+
   # RFC 3986, sec 4.2
   def test_allow_colons_in_path_component
     assert_sanitized("<a href=\"./this:that\">foo</a>")
@@ -284,7 +305,22 @@ class SanitizerTest < ActionController::TestCase
     assert_sanitized %(<a href="http&#x3A;//legit">), %(<a href="http://legit">)
   end
 
+  def test_sanitize_data_attributes
+    assert_sanitized %(<a href="/blah" data-method="post">foo</a>), %(<a href="/blah">foo</a>)
+    assert_sanitized %(<a data-remote="true" data-type="script" data-method="get" data-cross-domain="true" href="attack.js">Launch the missiles</a>), %(<a href="attack.js">Launch the missiles</a>)
+  end
+
+  def test_allow_data_attribute_if_requested
+    text = %(<a data-foo="foo">foo</a>)
+    assert_equal %(<a data-foo="foo">foo</a>), white_list_sanitize(text, :attributes => ['data-foo'])
+  end
+
 protected
+
+  def white_list_sanitize(input, options = {})
+    HTML::WhiteListSanitizer.new.sanitize(input, options)
+  end
+
   def assert_sanitized(input, expected = nil)
     @sanitizer ||= HTML::WhiteListSanitizer.new
     if input
