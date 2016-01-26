@@ -326,6 +326,27 @@ class SanitizerTest < ActionController::TestCase
     assert_equal 'omg &lt;script&gt;BOM&lt;/script&gt;', sanitizer.sanitize('omg &lt;script&gt;BOM&lt;/script&gt;')
   end
 
+  # Test for CVE-2015-7580
+  # The sanitizer of this version of Rails LTS is not affected. We add some tests to confirm this.
+  def test_sanitize_nested_script
+    sanitizer = HTML::WhiteListSanitizer.new
+    assert_equal '', sanitizer.sanitize('<script><script></script>alert("XSS");<script><</script>/</script><script>script></script>', :tags => %w(em))
+    assert_equal '<em></em>', sanitizer.sanitize('<em><script><script></script>alert("XSS");<script><</script>/</script><script>script></script></em>', :tags => %w(em))
+  end
+
+  # Test for CVE-2015-7580
+  # The sanitizer of this version of Rails LTS is not affected. We add some tests to confirm this.
+  def test_sanitize_nested_script_in_style
+    sanitizer = HTML::WhiteListSanitizer.new
+
+    # Behaves differently than rails-html-sanitizer; output is still acceptable as it does not allow XSS.
+    assert_equal 'alert("XSS");&lt;/script>', sanitizer.sanitize('<style><script></style>alert("XSS");<style><</style>/</style><style>script></style>', :tags => %w(em))
+
+    # Another test to confirm that the style tags' cdata will be sanitized well enough to avoid XSS:
+    assert_equal '&lt;script>alert("XSS");&lt;/script>', sanitizer.sanitize('<style><</style>script<style>></style>alert("XSS");<style><</style>/script<style>></style>', :tags => %w(em))
+    assert_equal '<em>&lt;script>alert("XSS");&lt;/script></em>', sanitizer.sanitize('<em><style><</style>script<style>></style>alert("XSS");<style><</style>/script<style>></style></em>', :tags => %w(em))
+  end
+
 protected
 
   def white_list_sanitize(input, options = {})
