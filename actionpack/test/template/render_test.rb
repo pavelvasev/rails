@@ -99,6 +99,13 @@ module RenderTestCases
     assert_equal "only partial", @view.render("test/partial_only")
   end
 
+  def test_render_with_params
+    params = ActionController::ParamsHashWithIndifferentAccess.new(:inline => '<%= raise "I am an RCE vulnerability" %>')
+    assert_raises ArgumentError do
+      @view.render(params)
+    end
+  end
+
   def test_render_partial
     assert_equal "only partial", @view.render(:partial => "test/partial_only")
   end

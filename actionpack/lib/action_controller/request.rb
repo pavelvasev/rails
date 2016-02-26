@@ -382,7 +382,7 @@ EOM
 
     # Returns both GET and POST \parameters in a single hash.
     def parameters
-      @parameters ||= request_parameters.merge(query_parameters).update(path_parameters).with_indifferent_access
+      @parameters ||= ParamsHashWithIndifferentAccess.new(request_parameters.merge(query_parameters).update(path_parameters))
     end
     alias_method :params, :parameters
 
