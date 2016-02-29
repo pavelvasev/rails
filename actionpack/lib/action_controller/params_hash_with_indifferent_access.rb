@@ -9,8 +9,14 @@ module ActionController
       end
     end
 
+    def with_indifferent_access
+      self.class.new_from_hash_copying_default(self)
+    end
+
     # Returns an exact copy of the hash.
     def dup
+      # this does not copy defaults,
+      # since the HashWithIndifferentAccess in 2.3 does not either
       self.class.new(self)
     end
 

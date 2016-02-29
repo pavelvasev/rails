@@ -129,4 +129,12 @@ class ParamsHashWithIndifferentAccessTest < Test::Unit::TestCase
     assert_equal '2', hash[:urls][:url][1][:address]
   end
 
+  def test_with_indifferent_access_returns_a_params_hash
+    hash = params_hash({ 'foo' => 'bar'})
+    hash = hash.with_indifferent_access
+
+    assert hash.is_a?(ParamsHashWithIndifferentAccess)
+    assert hash['foo'] == 'bar'
+  end
+
 end
