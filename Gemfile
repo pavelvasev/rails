@@ -11,5 +11,4 @@ gem 'pg', '=0.9.0'
 gem 'nokogiri', '1.3.3'
 gem 'libxml-ruby', '=1.1.4'
 
-# This is for running tests only. Update via "bundle update rails-version".
-gem 'railslts-version', '<3'
+gem 'railslts-version', :path => 'railslts-version'
