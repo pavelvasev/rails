@@ -279,6 +279,11 @@ module Rails
     # Require lts-version, so RailsLTS::VERSION is available.
     # Needs to happen late, so load paths are properly set up when using frozen gems.
     def require_lts_version
+      version_load_path = configuration.railslts_version_path
+      if version_load_path
+        $LOAD_PATH << version_load_path
+        $LOAD_PATH.uniq!
+      end
       require 'railslts-version'
     end
 
@@ -1003,6 +1008,11 @@ Run `rake gems:install` to install the missing gems.
       end
 
       paths.map { |dir| "#{framework_root_path}/#{dir}" }.select { |dir| File.directory?(dir) }
+    end
+
+    def railslts_version_path
+      dir = "#{framework_root_path}/railslts-version/lib"
+      dir if File.directory?(dir)
     end
 
     private
