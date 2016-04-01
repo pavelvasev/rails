@@ -10,7 +10,6 @@ require 'rails/plugin/loader'
 require 'rails/gem_dependency'
 require 'rails/rack'
 require 'railslts'
-require 'railslts-version'
 
 RAILS_ENV = (ENV['RAILS_ENV'] || 'development').dup unless defined?(RAILS_ENV)
 
@@ -135,6 +134,7 @@ module Rails
       add_gem_load_paths
 
       require_frameworks
+      require_lts_version
       set_autoload_paths
       add_plugin_load_paths
       load_environment
@@ -274,6 +274,12 @@ module Rails
     rescue LoadError => e
       # Re-raise as RuntimeError because Mongrel would swallow LoadError.
       raise e.to_s
+    end
+
+    # Require lts-version, so RailsLTS::VERSION is available.
+    # Needs to happen late, so load paths are properly set up when using frozen gems.
+    def require_lts_version
+      require 'railslts-version'
     end
 
     # Preload all frameworks specified by the Configuration#frameworks.
