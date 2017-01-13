@@ -131,7 +131,7 @@ namespace :railslts do
         'Did you update the LICENSE files using `rake railslts:update_license?',
         'Did you commit and push your changes, as well as the changes by the Rake tasks mentioned above?',
         'Did you build static gems using `rake railslts:gems:build` (those are not pushed to Git)?',
-        'Did you activate key forwarding for *.gems.makandra.de?',
+        'Did you activate key forwarding for *.railslts.makandra.de?',
         "We will now publish the Rails LTS #{RailsLts::VERSION::STRING} for customers. Ready?",
       ]
 
@@ -150,8 +150,8 @@ namespace :railslts do
     end
 
     task :push_to_git_repo do
-      %w[c23 c42 c32 c24].each do |hostname|
-        fqdn = "#{hostname}.gems.makandra.de"
+      %w[c23 c42].each do |hostname|
+        fqdn = "#{hostname}.railslts.makandra.de"
         puts "\033[1mUpdating #{fqdn}...\033[0m"
         command = "cd /var/www/railslts && git fetch origin #{BRANCH}:#{BRANCH}"
         run.call "ssh deploy-gems_p@#{fqdn} '#{command}'"
