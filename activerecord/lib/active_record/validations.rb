@@ -1039,6 +1039,7 @@ module ActiveRecord
             raw_value = raw_value.to_i
           else
             begin
+              raise ArgumentError if raw_value.to_s =~ /\A\s*0x/ # new rubies allow this, but we don't want it for compatibility
               raw_value = Kernel.Float(raw_value)
             rescue ArgumentError, TypeError
               record.errors.add(attr_name, :not_a_number, :value => raw_value, :default => configuration[:message])
