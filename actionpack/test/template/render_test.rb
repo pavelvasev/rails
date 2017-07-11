@@ -139,7 +139,7 @@ module RenderTestCases
     assert_match "undefined local variable or method `doesnt_exist'", e.message
     assert_equal "", e.sub_template_message
     assert_equal "1", e.line_number
-    assert_equal File.expand_path("#{FIXTURE_LOAD_PATH}/test/_raise.html.erb"), e.file_name
+    assert e.file_name.end_with?("test/_raise.html.erb")
   end
 
   def test_render_sub_template_with_errors
@@ -147,9 +147,9 @@ module RenderTestCases
     flunk "Render did not raise TemplateError"
   rescue ActionView::TemplateError => e
     assert_match "undefined local variable or method `doesnt_exist'", e.message
-    assert_equal "Trace of template inclusion: #{File.expand_path("#{FIXTURE_LOAD_PATH}/test/sub_template_raise.html.erb")}", e.sub_template_message
+    assert_match(/Trace of template inclusion: .*test\/sub_template_raise\.html\.erb/, e.sub_template_message)
     assert_equal "1", e.line_number
-    assert_equal File.expand_path("#{FIXTURE_LOAD_PATH}/test/_raise.html.erb"), e.file_name
+    assert e.file_name.end_with?("test/_raise.html.erb")
   end
 
   def test_render_object
