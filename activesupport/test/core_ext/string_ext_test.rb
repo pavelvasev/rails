@@ -400,10 +400,10 @@ class OutputSafetyTest < ActiveSupport::TestCase
   end
 
   test 'yaml output using +' do
-    assert_equal "--- foobar\n", ('foo' + 'bar').to_yaml
+    assert_equal "--- foobar\n", ('foo' + 'bar').to_yaml.sub("...\n", '')
   end
 
   test 'yaml output using <<' do
-    assert_equal "--- foobar\n", ('foo' << 'bar').to_yaml
+    assert_equal "--- foobar\n", ('foo' << 'bar').to_yaml.sub("...\n", '')
   end
 end
