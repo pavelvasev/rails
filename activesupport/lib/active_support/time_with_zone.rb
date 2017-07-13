@@ -61,6 +61,7 @@ module ActiveSupport
 
     # Returns the simultaneous time in <tt>Time.zone</tt>, or the specified zone.
     def in_time_zone(new_zone = ::Time.zone)
+      new_zone = ActiveSupport::TimeZone[new_zone] if new_zone.is_a?(String)
       return self if time_zone == new_zone
       utc.in_time_zone(new_zone)
     end
