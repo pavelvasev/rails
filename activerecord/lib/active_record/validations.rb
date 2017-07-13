@@ -817,8 +817,8 @@ module ActiveRecord
             condition_sql = "#{sql_attribute} #{comparison_operator}"
             condition_params = [value]
           else
-            condition_sql = "LOWER(#{sql_attribute}) #{comparison_operator}"
-            condition_params = [value.mb_chars.downcase]
+            condition_sql = "LOWER(#{sql_attribute}) #{comparison_operator.sub('?', 'LOWER(?)')}"
+            condition_params = [value.to_s]
           end
 
           if scope = configuration[:scope]
