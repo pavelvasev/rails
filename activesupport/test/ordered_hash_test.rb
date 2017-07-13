@@ -225,6 +225,10 @@ class OrderedHashTest < Test::Unit::TestCase
     assert_equal @other_ordered_hash.keys, @ordered_hash.keys
   end
 
+  def test_type_after_yaml_deserialization
+    assert_equal ActiveSupport::OrderedHash, YAML::load(YAML::dump(@ordered_hash)).class
+  end
+
   def test_each_after_yaml_serialization
     values = []
     @deserialized_ordered_hash = YAML::load(YAML::dump(@ordered_hash))

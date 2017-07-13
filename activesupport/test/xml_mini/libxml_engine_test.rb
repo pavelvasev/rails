@@ -4,7 +4,7 @@ require 'active_support/xml_mini'
 begin
   gem 'libxml-ruby'
 rescue Gem::LoadError
-  # Skip nokogiri tests
+  $stderr.puts "Skipping libxml engine tests. `gem install libxml-ruby` and try again."
 else
 
 require 'libxml'
