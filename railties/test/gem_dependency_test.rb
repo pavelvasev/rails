@@ -1,4 +1,19 @@
-Bundler.with_clean_env do
+if RUBY_VERSION >= '2'
+  # we no longer support this
+  exit(0)
+end
+
+def with_clean_env
+  if defined?(Bundler)
+    Bundler.with_clean_env do
+      yield
+    end
+  else
+    yield
+  end
+end
+
+with_clean_env do
   require 'plugin_test_helper'
 
   class Rails::GemDependency
