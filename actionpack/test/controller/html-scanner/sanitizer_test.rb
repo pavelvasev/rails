@@ -225,7 +225,7 @@ class SanitizerTest < ActionController::TestCase
 
   # fucked
   def test_should_sanitize_attributes
-    assert_sanitized %(<SPAN title="'><script>alert()</script>">blah</SPAN>), %(<span title="'&gt;&lt;script&gt;alert()&lt;/script&gt;">blah</span>)
+    assert_sanitized %(<SPAN title="'><script>alert()</script>">blah</SPAN>), %(<span title="&#39;&gt;&lt;script&gt;alert()&lt;/script&gt;">blah</span>)
   end
 
   def test_should_sanitize_illegal_style_properties
