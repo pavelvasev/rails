@@ -52,6 +52,7 @@ module ActiveSupport
   autoload :XmlMini, 'active_support/xml_mini'
 end
 
+require 'active_support/version_switches'
 require 'active_support/vendor'
 require 'active_support/core_ext'
 require 'active_support/dependencies'
