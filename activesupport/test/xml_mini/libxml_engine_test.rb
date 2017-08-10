@@ -53,7 +53,7 @@ class LibXMLEngineTest < Test::Unit::TestCase
       &a;
       </member>
       EOT
-      Hash.from_xml(attack_xml)
+      silence_stderr { Hash.from_xml(attack_xml) }
     end
   end
 

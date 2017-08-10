@@ -196,12 +196,14 @@ class OrderedHashTest < Test::Unit::TestCase
   end
 
   def test_alternate_initialization_with_array
-    alternate = ActiveSupport::OrderedHash[ [
-      [1, 2],
-      [3, 4],
-      "bad key value pair",
-      [ 'missing value' ]
-    ]]
+    alternate = silence_warnings do
+      ActiveSupport::OrderedHash[ [
+        [1, 2],
+        [3, 4],
+        "bad key value pair",
+        [ 'missing value' ]
+      ]]
+    end
 
     assert_kind_of ActiveSupport::OrderedHash, alternate
     assert_equal [1, 3, 'missing value'], alternate.keys
