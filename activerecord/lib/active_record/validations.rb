@@ -64,8 +64,12 @@ module ActiveRecord
       # </ol>
       def generate_message(options = {})
         keys = @base.class.self_and_descendants_from_active_record.map do |klass|
-          [ :"models.#{klass.name.underscore}.attributes.#{attribute}.#{@message}",
-            :"models.#{klass.name.underscore}.#{@message}" ]
+          if (klass_name = klass.name)
+            [ :"models.#{klass_name.underscore}.attributes.#{attribute}.#{@message}",
+              :"models.#{klass_name.underscore}.#{@message}" ]
+          else
+            []
+          end
         end.flatten
 
         keys << options.delete(:default)
