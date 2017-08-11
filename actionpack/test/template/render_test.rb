@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'abstract_unit'
 require 'controller/fake_models'
+require 'forwardable'
 
 module RenderTestCases
   def setup_view(paths)
@@ -140,6 +141,22 @@ module RenderTestCases
     assert_equal "", e.sub_template_message
     assert_equal "1", e.line_number
     assert e.file_name.end_with?("test/_raise.html.erb")
+  end
+
+  def test_error_backtrace_is_not_killed_by_forwardable
+    wrapper = Class.new do
+      extend Forwardable
+
+      def initialize(view)
+        @view = view
+      end
+
+      def_delegators :@view, :render
+    end.new(@view)
+    wrapper.render(:partial => "test/raise")
+    flunk "Render did not raise TemplateError"
+  rescue ActionView::TemplateError => e
+    assert e.backtrace.present?
   end
 
   def test_render_sub_template_with_errors
