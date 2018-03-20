@@ -347,6 +347,11 @@ class SanitizerTest < ActionController::TestCase
     assert_equal '<em>&lt;script>alert("XSS");&lt;/script></em>', sanitizer.sanitize('<em><style><</style>script<style>></style>alert("XSS");<style><</style>/script<style>></style></em>', :tags => %w(em))
   end
 
+  # Test for CVE-2018-3740
+  def test_injection_through_ssi
+    assert_sanitized %{<a href='examp<!--" unsafeattr=foo()>-->le.com'>test</a>}, %{<a href='examp&lt;!--&quot; unsafeattr=foo()&gt;--&gt;le.com'>test</a>}
+  end
+
 protected
 
   def white_list_sanitize(input, options = {})
