@@ -70,8 +70,14 @@ namespace :railslts do
       end
     end
 
+    task :ensure_old_rubygems do
+      if Gem::VERSION != '1.8.30'
+        fail "Please package with RubyGems version 1.8.30"
+      end
+    end
+
     # Call :package task in sub-projects
-    task :package_all do
+    task :package_all => :ensure_old_rubygems do
       ALL_PROJECT_PATHS.each do |project|
         run.call("cd #{project} && rake package")
       end
@@ -102,7 +108,7 @@ namespace :railslts do
     end
 
     desc 'Builds *.gem packages for distribution without Git'
-    task :build => [:delete, :package_all, :consolidate, :clean_building_artifacts] do
+    task :build => [:ensure_old_rubygems, :delete, :package_all, :consolidate, :clean_building_artifacts] do
       puts 'Done.'
     end
 
@@ -178,6 +184,8 @@ namespace :railslts do
         puts "Publishing #{gem_path}"
         # Hide STDOUT since that will print the server URL including the password
         run.call("gem push #{gem_path} --host #{server_url} > /dev/null")
+        puts "Waiting a bit..."
+        sleep 3
       end
     end
 
