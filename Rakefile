@@ -69,11 +69,11 @@ namespace :railslts do
 
       runner.run('actionpack', 'cd actionpack && rake test')
 
-      runner.run('activerecord (mysql)', 'cd activerecord && rake test_mysql')
+      runner.run('activerecord (mysql)', 'cd activerecord && rake mysql:rebuild_databases test_mysql')
 
       runner.run('activerecord (sqlite3)', 'cd activerecord && rake test_sqlite3')
 
-      runner.run('activerecord (postgres)', 'cd activerecord && rake test_postgresql')
+      runner.run('activerecord (postgres)', 'cd activerecord && rake postgresql:rebuild_databases test_postgresql')
 
       runner.run('activeresource', 'cd activeresource && rake test')
 
