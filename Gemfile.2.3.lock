@@ -8,6 +8,7 @@ GEM
   specs:
     RedCloth (4.3.2)
     libxml-ruby (3.0.0)
+    memcache-client (1.8.5)
     mini_portile2 (2.2.0)
     mocha (0.9.7)
       rake
@@ -29,6 +30,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth
   libxml-ruby (= 3.0.0)
+  memcache-client
   mocha (= 0.9.7)
   mysql
   nokogiri (= 1.8.0)
@@ -41,4 +43,4 @@ DEPENDENCIES
   test-unit
 
 BUNDLED WITH
-   1.16.3
+   1.16.5
