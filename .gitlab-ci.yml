@@ -14,7 +14,7 @@ ruby-2.3:
   script:
     - bundle exec rake railslts:test
   variables:
-    BUNDLE_GEMFILE: /rails/Gemfile.2.3
+    BUNDLE_GEMFILE: Gemfile.2.3
     BUNDLE_PATH: /bundle
     MYSQL_HOST: mysql-db
     MYSQL_USER: rails
