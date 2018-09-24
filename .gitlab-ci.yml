@@ -5,12 +5,12 @@ before_script:
 ruby-2.3:
   image: rails-lts:test-env
   services:
-  - name: rails-lts:pg-9.1
-    alias: pg-db
-  - name: rails-lts:mysql-5.6
-    alias: mysql-db
-  - name: memcached:1.5
-    alias: memcached
+    - name: rails-lts:pg-9.1
+      alias: pg-db
+    - name: rails-lts:mysql-5.6
+      alias: mysql-db
+    - name: memcached:1.5
+      alias: memcached
   script:
     - bundle exec rake railslts:test
   variables:
@@ -21,3 +21,6 @@ ruby-2.3:
     PG_HOST: pg-db
     PG_USER: rails
     MEMCACHE_HOST: memcached
+  cache:
+    paths:
+      - /bundle
