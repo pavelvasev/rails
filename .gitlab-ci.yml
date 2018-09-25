@@ -5,14 +5,38 @@ before_script:
 cache:
   key: ${CI_COMMIT_REF_SLUG}
 
-ruby-2.3:
-  image: rails-lts:test-env
+ruby-1.8.7:
+  image: registry.makandra.de/rails-lts/rails-lts-docker/test-env
   services:
-    - name: rails-lts:pg-9.1
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/pg:9.1
       alias: pg-db
-    - name: rails-lts:mysql-5.6
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/mysql:5.6
       alias: mysql-db
-    - name: memcached:1.5
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/memcached:1.5
+      alias: memcached
+  script:
+    - bundle exec rake railslts:test
+  variables:
+    BUNDLE_GEMFILE: Gemfile.1.8
+    BUNDLE_PATH: ./bundle/vendor
+    MYSQL_HOST: mysql-db
+    MYSQL_USER: rails
+    PG_HOST: pg-db
+    PG_USER: rails
+    MEMCACHE_HOST: memcached
+    RBENV_VERSION: 1.8.7
+  cache:
+    paths:
+      - ./bundle/vendor
+
+ruby-2.3:
+  image: registry.makandra.de/rails-lts/rails-lts-docker/test-env
+  services:
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/pg:9.1
+      alias: pg-db
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/mysql:5.6
+      alias: mysql-db
+    - name: registry.makandra.de/rails-lts/rails-lts-docker/memcached:1.5
       alias: memcached
   script:
     - bundle exec rake railslts:test
@@ -24,6 +48,7 @@ ruby-2.3:
     PG_HOST: pg-db
     PG_USER: rails
     MEMCACHE_HOST: memcached
+    RBENV_VERSION: 2.3.7
   cache:
     paths:
       - ./bundle/vendor
