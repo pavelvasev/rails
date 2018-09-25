@@ -2,6 +2,9 @@ before_script:
   - ruby -v
   - bundle install
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+
 ruby-2.3:
   image: rails-lts:test-env
   services:
@@ -15,7 +18,7 @@ ruby-2.3:
     - bundle exec rake railslts:test
   variables:
     BUNDLE_GEMFILE: Gemfile.2.3
-    BUNDLE_PATH: /bundle
+    BUNDLE_PATH: ./bundle/vendor
     MYSQL_HOST: mysql-db
     MYSQL_USER: rails
     PG_HOST: pg-db
@@ -23,4 +26,4 @@ ruby-2.3:
     MEMCACHE_HOST: memcached
   cache:
     paths:
-      - /bundle
+      - ./bundle/vendor
