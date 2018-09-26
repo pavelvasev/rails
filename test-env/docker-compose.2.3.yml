@@ -15,7 +15,7 @@ services:
       PG_USER: rails
       MEMCACHE_HOST: memcached
       RBENV_VERSION: 2.3.7
-      PROMPT: '[lts:rails 2.3:ruby 2.3]'
+      PROMPT: 'rails 2.3 : ruby 2.3'
     networks:
       - db
     volumes:
