@@ -1,6 +1,7 @@
 before_script:
   - ruby -v
   - bundle install
+  - bundle pristine
 
 cache:
   key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
