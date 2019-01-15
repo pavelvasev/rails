@@ -14,7 +14,7 @@ if RUBY_VERSION >= '2.5'
   gem 'nokogiri', '=1.8.0'
   gem 'test-unit'
   # "mysql" will not compile any more
-  gem 'mysql2'
+  gem 'mysql2', '<0.3'
 elsif RUBY_VERSION >= '2'
   gem 'rake', '~> 10.4'
   gem 'pg'

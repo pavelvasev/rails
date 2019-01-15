@@ -69,7 +69,11 @@ namespace :railslts do
 
       runner.run('actionpack', 'cd actionpack && rake test')
 
-      runner.run('activerecord (mysql)', 'cd activerecord && rake mysql:rebuild_databases test_mysql')
+      if Gem.loaded_specs.has_key?('mysql2')
+        runner.run('activerecord (mysql2)', 'cd activerecord && rake mysql:rebuild_databases test_mysql2')
+      else
+        runner.run('activerecord (mysql)', 'cd activerecord && rake mysql:rebuild_databases test_mysql')
+      end
 
       runner.run('activerecord (sqlite3)', 'cd activerecord && rake test_sqlite3')
 
