@@ -8,7 +8,7 @@ gem 'rack', '< 1.5'
 gem 'memcache-client'
 gem 'fcgi'
 
-if RUBY_VERSION >= '2.5'
+if RUBY_VERSION >= '2.4'
   gem 'rake', '~> 10.4'
   gem 'pg'
   gem 'nokogiri', '=1.8.0'
