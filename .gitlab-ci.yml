@@ -57,4 +57,3 @@ ruby-2.5:
   variables:
     <<: *lts_job_variables
     <<: *ruby_2_5
-  allow_failure: true
