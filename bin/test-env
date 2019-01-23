@@ -3,7 +3,7 @@
 RAILS_VERSION=2.3
 DOCKER=docker
 DOCKER_COMPOSE=docker-compose
-RUBY_VERSIONS=(1.8.7 2.3 2.4 2.5)
+RUBY_VERSIONS=(1.8.7 2.3 2.5)
 
 ROOT_PATH=`dirname $(readlink -f $0)`/..
 
