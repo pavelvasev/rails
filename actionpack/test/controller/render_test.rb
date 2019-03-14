@@ -1167,7 +1167,7 @@ class RenderTest < ActionController::TestCase
     assert_equal "$(\"body\").visualEffect(\"highlight\");", @response.body
   end
 
-  def test_no_render_of_mime_types_from_accept_header
+  def test_implicit_render_ignores_accept_header
     Mime::Type.register("text/registered", :registered)
     @request.accept = "text/registered"
     get :greeting
