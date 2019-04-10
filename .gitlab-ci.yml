@@ -1,3 +1,22 @@
+.rascal:
+  variables:
+    BUNDLE_PATH: /cache/bundle
+  volumes:
+    cache: /cache
+  before_shell:
+    - bundle check
+  jobs:
+    ruby-1.8.7:
+      variables:
+        BUNDLE_GEMFILE: /repo/Gemfile.1.8
+    ruby-2.3:
+      variables:
+        BUNDLE_GEMFILE: /repo/Gemfile.2.3
+    ruby-2.5:
+      variables:
+        BUNDLE_GEMFILE: /repo/Gemfile.2.5
+
+
 .lts_job: &lts_job
   image: registry.makandra.de/rails-lts/rails-lts-docker/test-env
   services:
@@ -45,15 +64,18 @@ ruby-1.8.7:
   variables:
     <<: *lts_job_variables
     <<: *ruby_1_8_7
+    PROMPT: 'rails 2.3 : ruby 1.8.7'
 
 ruby-2.3:
   <<: *lts_job
   variables:
     <<: *lts_job_variables
     <<: *ruby_2_3
+    PROMPT: 'rails 2.3 : ruby 2.3'
 
 ruby-2.5:
   <<: *lts_job
   variables:
     <<: *lts_job_variables
     <<: *ruby_2_5
+    PROMPT: 'rails 2.3 : ruby 2.5'
