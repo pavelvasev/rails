@@ -1,4 +1,5 @@
 require 'active_record_unit'
+require 'digest/sha2'
 
 class ActiveRecordStoreTest < ActionController::IntegrationTest
   DispatcherApp = ActionController::Dispatcher.new
@@ -37,6 +38,7 @@ class ActiveRecordStoreTest < ActionController::IntegrationTest
 
   def setup
     ActiveRecord::SessionStore.session_class.create_table!
+    ActiveRecord::SessionStore::Session.session_id_column = nil
     @integration_session = open_session(SessionApp)
   end
 
@@ -192,6 +194,150 @@ class ActiveRecordStoreTest < ActionController::IntegrationTest
       assert_response :success
       assert_equal 'foo: "baz"', response.body
       assert_equal session_id, cookies['_session_id']
+    end
+  end
+
+  %w{ session sql_bypass }.each do |class_name|
+    define_method :"test_sessions_are_indexed_by_a_hashed_session_id_mimicking_rack_for_#{class_name}" do
+      with_store(class_name) do
+        with_test_route_set do
+          get '/set_session_value'
+          assert_response :success
+          public_session_id = cookies['_session_id']
+
+          session = ActiveRecord::SessionStore::Session.last
+          assert session
+          assert_not_equal public_session_id, session.read_attribute(:session_id)
+
+          expected_private_id = "2::#{Digest::SHA256.hexdigest(public_session_id)}"
+
+          assert_equal expected_private_id, session.read_attribute(:session_id)
+        end
+      end
+    end
+
+    define_method :"test_unsecured_sessions_are_retrieved_and_migrated_for_#{class_name}" do
+      with_store(class_name) do
+        with_test_route_set do
+          get '/set_session_value', :foo => 'baz'
+          assert_response :success
+          public_session_id = cookies['_session_id']
+
+          session = ActiveRecord::SessionStore::Session.last
+          session.data # otherwise we cannot save
+          session.write_attribute(:session_id, public_session_id)
+          session.save!
+
+          get '/get_session_value'
+          assert_response :success
+          assert_equal 'foo: "baz"', response.body
+
+          session = ActiveRecord::SessionStore::Session.last
+          assert_not_equal public_session_id, session.read_attribute(:session_id)
+        end
+      end
+    end
+
+    # to avoid a different kind of timing attack
+    define_method :"test_sessions_cannot_be_retrieved_by_their_private_session_id_for_#{class_name}" do
+      with_store(class_name) do
+        with_test_route_set do
+          get '/set_session_value', :foo => 'baz'
+          assert_response :success
+          public_session_id = cookies['_session_id']
+
+          session = ActiveRecord::SessionStore::Session.last
+          private_session_id = session.read_attribute(:session_id)
+
+          cookies['_session_id'] = private_session_id
+
+          get '/get_session_value'
+          assert_response :success
+          assert_equal 'foo: nil', response.body
+        end
+      end
+    end
+  end
+
+  def test_session_table_can_use_legacy_sessid_column
+    with_store('session') do
+      with_test_route_set do
+        session_class = ActiveRecord::SessionStore.session_class
+        session_class.drop_table!
+        connection = session_class.connection
+        connection.execute <<-SQL
+            CREATE TABLE #{session_class.table_name} (
+              id INTEGER PRIMARY KEY,
+              #{connection.quote_column_name('sessid')} TEXT UNIQUE,
+              #{connection.quote_column_name('data')} TEXT(255)
+            )
+        SQL
+        get '/set_session_value'
+        assert_response :success
+        assert cookies['_session_id']
+
+        get '/get_session_value'
+        assert_response :success
+        assert_equal 'foo: "bar"', response.body
+
+        get '/set_session_value', :foo => "baz"
+        assert_response :success
+        assert cookies['_session_id']
+
+        get '/get_session_value'
+        assert_response :success
+        assert_equal 'foo: "baz"', response.body
+      end
+    end
+  end
+
+  def test_session_can_be_secured
+    with_store('session') do
+      with_test_route_set do
+        get '/set_session_value', :foo => 'baz'
+        assert_response :success
+        public_session_id = cookies['_session_id']
+
+        session = ActiveRecord::SessionStore::Session.last
+        private_session_id = session.read_attribute(:session_id)
+        assert_not_equal public_session_id, private_session_id
+
+        session.data # otherwise we cannot save
+        session.write_attribute(:session_id, public_session_id)
+        session.save!
+
+        session.secure!
+        session.reload
+        assert_equal private_session_id, session.read_attribute(:session_id)
+
+        get '/get_session_value'
+        assert_response :success
+        assert_equal 'foo: "baz"', response.body
+      end
+    end
+  end
+
+  def test_secure_is_idempotent
+    with_store('session') do
+      with_test_route_set do
+        get '/set_session_value', :foo => 'baz'
+        assert_response :success
+        public_session_id = cookies['_session_id']
+
+        session = ActiveRecord::SessionStore::Session.last
+        private_session_id = session.read_attribute(:session_id)
+        assert_not_equal public_session_id, private_session_id
+
+        session.data # otherwise we cannot save
+        session.write_attribute(:session_id, public_session_id)
+        session.save!
+
+        session.secure!
+        session.secure!
+        session.reload
+        session.secure!
+        assert_equal private_session_id, session.read_attribute(:session_id)
+      end
     end
   end
 
