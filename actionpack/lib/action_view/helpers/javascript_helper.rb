@@ -135,12 +135,23 @@ module ActionView
         "\n"    => '\n',
         "\r"    => '\n',
         '"'     => '\\"',
-        "'"     => "\\'" }
+        "'"     => "\\'",
+        "`"     => "\\`",
+        "$"     => "\\$",
+      }
+
+      if ActiveSupport.modern_ruby?
+        JS_ESCAPE_MAP["\342\200\250".force_encoding('UTF-8').encode!] = '&#x2028;'
+        JS_ESCAPE_MAP["\342\200\251".force_encoding('UTF-8').encode!] = '&#x2029;'
+      else
+        JS_ESCAPE_MAP["\342\200\250"] = '&#x2028;'
+        JS_ESCAPE_MAP["\342\200\251"] = '&#x2029;'
+      end
 
       # Escape carrier returns and single and double quotes for JavaScript segments.
       def escape_javascript(javascript)
         if javascript
-          javascript.gsub(/(\\|<\/|\r\n|[\n\r"'])/) { JS_ESCAPE_MAP[$1] }
+          javascript.gsub(/(\\|<\/|\r\n|\342\200\250|\342\200\251|[\n\r"'`$])/u) { JS_ESCAPE_MAP[$1] }
         else
           ''
         end
