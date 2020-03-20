@@ -3,7 +3,8 @@ require 'erb'
 class ERB
   module Util
     HTML_ESCAPE = { '&' => '&amp;',  '>' => '&gt;',   '<' => '&lt;', '"' => '&quot;', "'" => '&#39;' }
-    JSON_ESCAPE = { '&' => '\u0026', '>' => '\u003E', '<' => '\u003C' }
+    JSON_ESCAPE = { '&' => '\u0026', '>' => '\u003E', '<' => '\u003C', "\u2028" => '\u2028', "\u2029" => '\u2029' }
+
     if defined?(::Encoding::US_ASCII)
       REGEXP = Regexp.new(%([&"'><]), ::Encoding::US_ASCII)
     else
@@ -44,7 +45,7 @@ class ERB
     #   puts json_escape("is a > 0 & a < 10?")
     #   # => is a \u003E 0 \u0026 a \u003C 10?
     def json_escape(s)
-      s.to_s.gsub(/[&"><]/) { |special| JSON_ESCAPE[special] }
+      s.to_s.gsub(/[&"><]|\u2028|\u2029/u) { |special| JSON_ESCAPE[special] }
     end
 
     alias j json_escape
