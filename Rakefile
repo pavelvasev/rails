@@ -227,6 +227,15 @@ namespace :railslts do
   namespace :community do
 
     task :push_to_git_repo do
+      puts 'Did you cherry-pick all changes to the community-2-3-lts branch? [y/n]'
+      answer = STDIN.gets
+      puts
+      unless answer.strip == 'y'
+        $stderr.puts 'Aborting. Nothing was released.'
+        puts
+        exit
+      end
+
       existing_remotes = `git remote`
       unless existing_remotes.include?('community')
         run.call('git remote add community git@github.com:makandra/rails.git')
@@ -235,7 +244,7 @@ namespace :railslts do
 
       puts 'We will now publish the following changes to GitHub:'
       puts
-      run.call("git log --oneline community/#{BRANCH}..HEAD")
+      run.call("git log --oneline community/#{BRANCH}..community-2-3-lts")
       puts
 
       puts 'Do you want to proceed? [y/n]'
@@ -247,7 +256,7 @@ namespace :railslts do
         exit
       end
 
-      run.call("git push community #{BRANCH}")
+      run.call("git push community community-2-3-lts:#{BRANCH}")
       puts 'Gems pushed to community github repo.'
       puts "Check https://github.com/makandra/rails/tree/#{BRANCH} and make sure your commits are present"
     end
