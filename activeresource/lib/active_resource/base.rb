@@ -472,7 +472,7 @@ module ActiveResource
       #
       def element_path(id, prefix_options = {}, query_options = nil)
         prefix_options, query_options = split_options(prefix_options) if query_options.nil?
-        "#{prefix(prefix_options)}#{collection_name}/#{id}.#{format.extension}#{query_string(query_options)}"
+        "#{prefix(prefix_options)}#{collection_name}/#{_encode_www_form_component(id.to_s)}.#{format.extension}#{query_string(query_options)}"
       end
 
       # Gets the collection path for the REST resources.  If the +query_options+ parameter is omitted, Rails
@@ -703,6 +703,22 @@ module ActiveResource
           end
 
           [ prefix_options, query_options ]
+        end
+
+        if RUBY_VERSION >= '1.9'
+          define_method :_encode_www_form_component do |string|
+            URI.encode_www_form_component(string)
+          end
+        else
+          define_method :_encode_www_form_component do |string|
+            string.gsub(/[^*\-.0-9A-Z_a-z]/) do |char|
+              if char == ' '
+                '+'
+              else
+                '%%%02X' % char[0]
+              end
+            end
+          end
         end
     end
 

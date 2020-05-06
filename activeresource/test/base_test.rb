@@ -725,6 +725,22 @@ class BaseTest < Test::Unit::TestCase
     assert_equal "David", david.name
   end
 
+  def test_find_identifier_encoding
+    ActiveResource::HttpMock.respond_to { |m| m.get "/people/x%3F+%25.xml", {}, @david }
+
+    david = Person.find("x? %")
+
+    assert_equal "David", david.name
+  end
+
+  def test_find_identifier_encoding_for_path_traversal
+    ActiveResource::HttpMock.respond_to { |m| m.get "/people/..%2F.xml", {}, @david }
+
+    david = Person.find("../")
+
+    assert_equal "David", david.name
+  end
+
   def test_save
     rick = Person.new
     assert_equal true, rick.save
