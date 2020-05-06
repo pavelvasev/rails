@@ -77,6 +77,26 @@ class PageCachingTest < ActionController::TestCase
     ActionController::Base.perform_caching = false
   end
 
+  def test_cache_does_not_escape_cache_directory
+    with_routing do |set|
+      set.draw do |map|
+        map.connect "/page_caching_test/ok/:id", :controller => 'page_caching_test', :action => 'ok'
+      end
+
+      test_root = File.expand_path("../../", __FILE__)
+
+      # Make a path that escapes the cache directory
+      get_to_root = "../../../../"
+
+      # Make sure this relative path points at the project root
+      assert_equal test_root, File.expand_path(File.join(FILE_STORE_PATH, 'page_caching_test', 'ok', get_to_root))
+
+      get :ok, :id => "#{get_to_root}/pwnd"
+
+      assert Dir[File.join(test_root, "**", "*pwnd*")].empty?
+    end
+  end
+
   def test_page_caching_resources_saves_to_correct_path_with_extension_even_if_default_route
     @params[:format] = 'rss'
     assert_equal '/posts.rss', @rewriter.rewrite(@params)

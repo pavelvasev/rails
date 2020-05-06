@@ -64,7 +64,10 @@ module ActionController #:nodoc:
           return unless perform_caching
 
           benchmark "Expired page: #{page_cache_file(path)}" do
-            File.delete(page_cache_path(path)) if File.exist?(page_cache_path(path))
+            cache_path = page_cache_path(path)
+            if cache_path && File.exist?(cache_path)
+              File.delete(cache_path)
+            end
           end
         end
 
@@ -74,8 +77,11 @@ module ActionController #:nodoc:
           return unless perform_caching
 
           benchmark "Cached page: #{page_cache_file(path)}" do
-            FileUtils.makedirs(File.dirname(page_cache_path(path)))
-            File.open(page_cache_path(path), "wb+") { |f| f.write(content) }
+            cache_path = page_cache_path(path)
+            if cache_path
+              FileUtils.makedirs(File.dirname(cache_path))
+              File.open(cache_path, "wb+") { |f| f.write(content) }
+            end
           end
         end
 
@@ -103,7 +109,11 @@ module ActionController #:nodoc:
           end
 
           def page_cache_path(path)
-            page_cache_directory + page_cache_file(path)
+            normalized_page_cache_directory = File.expand_path(page_cache_directory)
+            full_path = File.expand_path(File.join(normalized_page_cache_directory, page_cache_file(path)))
+            if full_path.start_with?(normalized_page_cache_directory)
+              full_path
+            end
           end
       end
 
