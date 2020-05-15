@@ -4,6 +4,9 @@ module ActionView
   # NOTE: The template that this mixin is being included into is frozen
   # so you cannot set or modify any instance variables
   module Renderable #:nodoc:
+    INVALID_LOCAL_NAMES = Set.new(%w(alias and BEGIN begin break case class def defined? do else elsif END end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield)).freeze
+    VALID_LOCAL_REGEXP = /\A(?![A-Z0-9])(?:[[:alnum:]_]|[^\0-\177])+\z/.freeze
+
     extend ActiveSupport::Memoizable
 
     def filename
@@ -25,13 +28,16 @@ module ActionView
     memoize :method_name_without_locals
 
     def render(view, local_assigns = {})
-      compile(local_assigns)
+      sanitized_local_assigns = local_assigns.reject do |key, value|
+        INVALID_LOCAL_NAMES.include?(key.to_s) || key.to_s !~ VALID_LOCAL_REGEXP
+      end
+      compile(sanitized_local_assigns)
 
       view.with_template self do
         view.send(:_evaluate_assigns_and_ivars)
         view.send(:_set_controller_content_type, mime_type) if respond_to?(:mime_type)
 
-        view.send(method_name(local_assigns), local_assigns) do |*names|
+        view.send(method_name(sanitized_local_assigns), local_assigns) do |*names|
           ivar = :@_proc_for_layout
           if !view.instance_variable_defined?(:"@content_for_#{names.first}") && view.instance_variable_defined?(ivar) && (proc = view.instance_variable_get(ivar))
             view.capture(*names, &proc)

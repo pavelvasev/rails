@@ -82,6 +82,30 @@ module RenderTestCases
     assert_equal "The secret is in the sauce\n", @view.render(:file => "test/render_file_with_locals.erb", :locals => locals)
   end
 
+  def test_no_dangerous_locals
+    dangerous_locals = {
+      :'if' => '1',
+      :'end' => '1',
+      :'Foo' => '1',
+      :'$foo' => '1',
+      :"\nfoo" => '1',
+      :"[xxx" => '1',
+      :"secret" => 'secret',
+    }
+    # every one of these causes syntax errors
+    # we are not afraid of syntax errors as such, but it's a good indicator that something dangerous is happening here
+    assert_nothing_raised do
+      assert_equal "The secret is secret\n", @view.render(:file => "test/render_file_with_locals.erb", :locals => dangerous_locals)
+    end
+  end
+
+  def test_dangerous_local_still_accessible_in_local_assigns
+    dangerous_locals = {
+      "[xxx" => 'some value',
+    }
+    assert_equal dangerous_locals.inspect + "\n", @view.render(:file => "test/inspect_local_assigns.erb", :locals => dangerous_locals)
+  end
+
   def test_render_file_not_using_full_path_with_dot_in_path
     assert_equal "The secret is in the sauce\n", @view.render(:file => "test/dot.directory/render_file_with_ivar")
   end
