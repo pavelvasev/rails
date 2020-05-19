@@ -184,7 +184,8 @@ uses_memcached 'memcached backed store' do
       @data = @cache.instance_variable_get(:@data)
       @cache.clear
       @cache.silence!
-      @cache.logger = Logger.new("/dev/null")
+      @log = StringIO.new
+      @cache.logger = Logger.new(@log)
     end
 
     include CacheStoreBehavior
@@ -322,6 +323,15 @@ uses_memcached 'memcached backed store' do
       end
       assert_equal 'bat', @cache.read('baz')
       assert_equal nil, @cache.read('foo')
+    end
+
+    def test_logging_unsafe_usage_of_read
+      @cache.write('foo', 'test', :raw => true)
+
+      @cache.read('foo', :raw => false)
+
+      assert @log.string.include?('POTENTIAL UNSAFE USE OF `CACHE.READ`')
+      assert @log.string.include?(caller.first)
     end
   end
 

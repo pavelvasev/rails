@@ -63,6 +63,12 @@ module ActiveSupport
         @data.get(key, raw?(options))
       rescue MemCache::MemCacheError => e
         logger.error("MemCacheError (#{e}): #{e.message}")
+        logger.error(<<-TEXT)
+POTENTIAL UNSAFE USE OF `CACHE.READ`. Values written with `raw: true` need to be read with `raw: true` to avoid potential remote code execution.
+Called from:
+  #{caller.first(5).join("\n  ")}
+        TEXT
+
         nil
       end
 
