@@ -333,6 +333,21 @@ uses_memcached 'memcached backed store' do
       assert @log.string.include?('POTENTIAL UNSAFE USE OF `CACHE.READ`')
       assert @log.string.include?(caller.first)
     end
+
+    def test_no_unmarshalling_on_raw_reads
+      @cache.write('foo', Marshal.dump('test'), :raw => true)
+      assert_equal 'test', @cache.read('foo', :raw => false)
+      assert @cache.read('foo', :raw => true) != 'test'
+      assert_equal 'test', Marshal.load(@cache.read('foo', :raw => true))
+    end
+
+    def test_no_unmarshalling_on_raw_reads_in_local_cache
+      @cache.with_local_cache do
+        @cache.write('foo', Marshal.dump('test'), :raw => true)
+        assert @cache.read('foo', :raw => true) != 'test'
+        assert_equal 'test', Marshal.load(@cache.read('foo', :raw => true))
+      end
+    end
   end
 
   class CompressedMemCacheStore < ActiveSupport::TestCase
