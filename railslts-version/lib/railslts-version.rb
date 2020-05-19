@@ -7,7 +7,7 @@ module RailsLts
       MAJOR = 2
       MINOR = 3
       TINY = 18
-      LTS = 30
+      LTS = 31
       STRING = [MAJOR, MINOR, TINY, LTS].join('.')
 
       def self.to_s
