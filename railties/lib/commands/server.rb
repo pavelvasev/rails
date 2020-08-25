@@ -42,7 +42,11 @@ ARGV.clone.options do |opts|
   opts.parse!
 end
 
-server = Rack::Handler.get(ARGV.first) rescue nil
+server = begin
+  Rack::Handler.get(ARGV.first)
+rescue Exception
+  # not a handler
+end
 unless server
   begin
     server = Rack::Handler::Mongrel
