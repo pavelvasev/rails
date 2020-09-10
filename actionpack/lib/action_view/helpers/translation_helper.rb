@@ -31,8 +31,15 @@ module ActionView
               end
             end
 
+            html_safe_options[:default] = MISSING_TRANSLATION unless html_safe_options[:default].blank?
+
             translation = I18n.translate(qualified_key, html_safe_options)
-            translation.respond_to?(:html_safe) ? translation.html_safe : translation
+
+            if translation.equal?(MISSING_TRANSLATION)
+              Array(options[:default]).detect { |default| default && !default.is_a?(Symbol) }
+            else
+              translation.respond_to?(:html_safe) ? translation.html_safe : translation
+            end
           else
             I18n.translate(qualified_key, options)
           end
@@ -58,6 +65,9 @@ module ActionView
 
 
       private
+
+        MISSING_TRANSLATION = Object.new
+        private_constant :MISSING_TRANSLATION if RUBY_VERSION >= "1.9.3"
 
         def scope_key_by_partial(key)
           key = key.to_s

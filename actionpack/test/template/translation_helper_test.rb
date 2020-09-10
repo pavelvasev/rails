@@ -109,4 +109,54 @@ class TranslationHelperTest < ActiveSupport::TestCase
     assert_equal ["foo", "bar"], translate('translations.array_html')
   end
 
+  # Tests backported from 4.2 that were missing for existing 2.3 behavior
+
+  def test_translate_with_string_default
+    translation = translate(:'translations.missing', :default => 'A Generic String')
+    assert_equal 'A Generic String', translation
+  end
+
+  def test_translate_with_object_default
+    translation = translate(:'translations.missing', :default => 123)
+    assert_equal 123, translation
+  end
+
+  def test_translate_with_array_of_string_defaults
+    translation = translate(:'translations.missing', :default => ['A Generic String', 'Second generic string'])
+    assert_equal 'A Generic String', translation
+  end
+
+  def test_translate_with_array_of_defaults_with_nil
+    translation = translate(:'translations.missing', :default => [:'also_missing', nil, 'A Generic String'])
+    assert_equal 'A Generic String', translation
+  end
+
+  def test_translate_with_array_of_array_default
+    translation = translate(:'translations.missing', :default => [[]])
+    assert_equal [], translation
+  end
+
+  # Tests for CVE-2020-15169
+
+  def test_translate_does_not_mark_unsourced_string_default_as_html_safe
+    untrusted_string = "<script>alert()</script>"
+    translation = translate(:"translations.missing_html", :default => untrusted_string)
+    assert_equal untrusted_string, translation
+    assert_equal false, translation.html_safe?
+  end
+
+  def test_translate_does_not_mark_unsourced_string_default_as_html_safe_with_missing_default_named_html
+    untrusted_string = "<script>alert()</script>"
+    translation = translate(:"translations.missing", :default => [:"translations.missing_html", untrusted_string])
+    assert_equal untrusted_string, translation
+    assert_equal false, translation.html_safe?
+  end
+
+  def test_translate_does_not_mark_unsourced_string_default_as_html_safe_with_missing_default
+    untrusted_string = "<script>alert()</script>"
+    translation = translate(:"translations.missing_html", :default => [:'also_missing', nil, untrusted_string])
+    assert_equal untrusted_string, translation
+    assert_equal false, translation.html_safe?
+  end
+
 end
