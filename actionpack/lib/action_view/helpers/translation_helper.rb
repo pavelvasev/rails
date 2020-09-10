@@ -36,6 +36,8 @@ module ActionView
             translation = I18n.translate(qualified_key, html_safe_options)
 
             if translation.equal?(MISSING_TRANSLATION)
+              # I18n.translate does not support Symbols as references to other translations (like Rails 4.2+ would)
+              # and returns the first non-nil, non-Symbol `:default` value. For consistency, we mimic this behavior:
               Array(options[:default]).detect { |default| default && !default.is_a?(Symbol) }
             else
               translation.respond_to?(:html_safe) ? translation.html_safe : translation
