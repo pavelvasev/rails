@@ -63,6 +63,11 @@ module ActiveSupport
       # If a newline is necessary then create a new message ending with a newline.
       # Ensures that the original message is not mutated.
       message = "#{message}\n" unless message[-1] == ?\n
+      # We should encode message to encoding appropriate for writing to log file,
+      #   which is `Encoding.default_internal` because log file is created without any encoding options.
+      # Otherwise we receive exception during buffer flush stage
+      #   which will occur forever in current rails process, for all ongoing requests.
+      message = message.encode( Encoding.default_internal, :invalid => :replace, :undef => :replace )      
       buffer << message
       auto_flush
       message
